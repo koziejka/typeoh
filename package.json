@@ -13,10 +13,10 @@
     }
   ],
   "scripts": {
-    "test": "jest"
+    "test": "jest --watch"
   },
   "name": "typeoh",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "keywords": [
     "is",
     "type",
@@ -37,6 +37,7 @@
     "url": "https://github.com/koziejka/typeoh"
   },
   "devDependencies": {
+    "eslint-plugin-jest": "^21.15.1",
     "jest": "^22.4.4"
   }
 }

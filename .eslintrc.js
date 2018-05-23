@@ -1,31 +1,30 @@
 module.exports = {
-  "env": {
-    "browser": true,
-    "commonjs": true,
-    "es6": true,
-    "node": true
+  'plugins': ['jest'],
+  'env': {
+    'browser': true,
+    'commonjs': true,
+    'es6': true,
+    'node': true,
+    'jest/globals': true
   },
-  "parserOptions": {
-    "ecmaVersion": 2017
+  'parserOptions': {
+    'ecmaVersion': 2017
   },
-  "extends": "eslint:recommended",
-  "rules": {
-    "indent": [
-      "error",
+  'extends': 'eslint:recommended',
+  'rules': {
+    'indent': [
+      'error',
       2,
-      { "SwitchCase": 1 }
+      { 'SwitchCase': 1 }
     ],
-    "linebreak-style": [
-      "error",
-      "windows"
+    'linebreak-style': ['error', 'windows'],
+    'quotes': [
+      'error',
+      'single'
     ],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "never"
+    'semi': [
+      'error',
+      'never'
     ]
   }
 };
