@@ -7,6 +7,8 @@ $ npm install --save typeoh
 
 # Usage
 
+### Working on [docks](https://github.com/koziejka/typeoh/wiki)
+
 ## Check if object is of type 'a
 ```javascript
 const { is } = require('typeoh')
@@ -53,7 +55,7 @@ const isCar = is('Car')       // compares type symbols
 const isCar = is(type('Car')) // compares type symbols
 ```
 
-## Create custom "Type" - beta
+## Create custom "Type" - beta v2
 
 `createType([compiled type name], ["constructor" function], ...[type extensions])`
 
@@ -69,6 +71,25 @@ const Vector = createType('Vector', (state, x, y) => {
 // allows for 2 types of call
 Vector(1, 2)     //? Vector { x: 1, y: 2 }
 new Vector(1, 2) //? Vector { x: 1, y: 2 }
+
+```
+
+### Convert regular types, geters/seters support
+
+```javascript
+const Vector = createType(class Vector {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+  }
+  get length() { return Math.hyporth(this.x, this.y) }
+})
+
+Vector(3, 4).length //? 5
+[Vector(3, 4), Vector(3, 4), Vector(3, 4), Vector(3, 4)]
+  .map(Vector.get_length) 
+
+
 ```
 
 ### Async constructors
@@ -76,7 +97,7 @@ new Vector(1, 2) //? Vector { x: 1, y: 2 }
 const { createType } = require('typeoh')
 
 const User = createType('User', async (state, u_name, foo) => {
-  const { name, age } =await fetch('userdata', { u_name, foo })
+  const { name, age } = await fetch('userdata', { u_name, foo })
   state.age = age
   state.name = name
 })
@@ -130,26 +151,6 @@ Player.draw(new Player)
 Player.update(Player())
 
 ```
-
-### Future:  
-* automatic class conversion: `createType(Car)`
-* asign properties and values 
-```javascript
-const Vector = createType('Vector', () => {}, { 
-  get length({ x, y }) { }
-  set length({ x, y }) { }
-})
-
-const vec = Vector(3, 4)
-vec.length                  //? 5
-vec.length = 1              //? 1
-vec                         //? Vector { x: 0.6, y: 0.8 }
-Vector.length(Vector(3, 4)) //? 5
-
-[Vector(1, 2), Vector(2, 3), Vector(3, 4), Vector(4, 5)]
-  .map(Vector.length) //? [2.23606797749979, 3.605551275463989, 5, 6.4031242374328485]
-```
-
 
 ## Get type Name
 ```javascript

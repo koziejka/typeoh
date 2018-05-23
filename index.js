@@ -100,8 +100,7 @@ is.Function = (val) => Boolean(val) && val.constructor === Function
 is.AsyncFunction = (val) => Boolean(val) && val.constructor === AsyncConstructor
 is.GeneratorFunction = (val) => Boolean(val) && val.constructor === GeneratorConstructor
 is.AsyncGeneratorFunction = (val) => Boolean(val) && val.constructor === AsyncGeneratorConstructor
-// todo improve native function check 
-is.NativeFunction = val => Boolean(val) && `${val}`.length - 29 === val.name.length
+is.NativeFunction = val => Boolean(val) && /^function \w+\(\) { \[native code/.test(val.toString())
 
 is.Array = Array.isArray
 is.Object = (val) => typeoh(val) === T_Object
