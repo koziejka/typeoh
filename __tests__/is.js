@@ -7,7 +7,7 @@ class Vector extends Array {
   constructor() { super(3) }
 }
 
-test("is object", () => {
+test('is object', () => {
   expect(is.object({})).toBe(true)
   expect(is.object(Object.create(null))).toBe(true)
   expect(is.object(new Car)).toBe(true)
@@ -21,7 +21,7 @@ test("is object", () => {
   expect(is.object(null)).toBe(false)
   expect(is.object(false)).toBe(false)
 })
-test("is Object", () => {
+test('is Object', () => {
   expect(is.Object({})).toBe(true)
   expect(is.Object(Object.create(null))).toBe(true)
 
@@ -36,7 +36,7 @@ test("is Object", () => {
   expect(is.Object(null)).toBe(false)
   expect(is.Object(false)).toBe(false)
 })
-test("is Array", () => {
+test('is Array', () => {
   expect(is.Array([])).toBe(true)
   expect(is.Array(new Vector)).toBe(true)
 
@@ -52,7 +52,7 @@ test("is Array", () => {
   expect(is.Array(null)).toBe(false)
   expect(is.Array(false)).toBe(false)
 })
-test("is null", () => {
+test('is null', () => {
   expect(is.null([])).toBe(false)
   expect(is.null(new Vector)).toBe(false)
 
@@ -68,7 +68,7 @@ test("is null", () => {
   expect(is.null(null)).toBe(true)
   expect(is.null(false)).toBe(false)
 })
-test("is undefined", () => {
+test('is undefined', () => {
   expect(is.undefined([])).toBe(false)
   expect(is.undefined(new Vector)).toBe(false)
 
@@ -84,7 +84,7 @@ test("is undefined", () => {
   expect(is.undefined(null)).toBe(false)
   expect(is.undefined(false)).toBe(false)
 })
-test("is Promise", () => {
+test('is Promise', () => {
   expect(is.Promise([])).toBe(false)
   expect(is.Promise(new Vector)).toBe(false)
 
@@ -100,7 +100,7 @@ test("is Promise", () => {
   expect(is.Promise(null)).toBe(false)
   expect(is.Promise(false)).toBe(false)
 })
-test("is string", () => {
+test('is string', () => {
   expect(is.string([])).toBe(false)
   expect(is.string(new Vector)).toBe(false)
 
@@ -116,7 +116,7 @@ test("is string", () => {
   expect(is.string(null)).toBe(false)
   expect(is.string(false)).toBe(false)
 })
-test("is number", () => {
+test('is number', () => {
   expect(is.number([])).toBe(false)
   expect(is.number(new Vector)).toBe(false)
 
@@ -132,7 +132,7 @@ test("is number", () => {
   expect(is.number(null)).toBe(false)
   expect(is.number(false)).toBe(false)
 })
-test("is boolean", () => {
+test('is boolean', () => {
   expect(is.boolean([])).toBe(false)
   expect(is.boolean(new Vector)).toBe(false)
 
@@ -148,7 +148,7 @@ test("is boolean", () => {
   expect(is.boolean(null)).toBe(false)
   expect(is.boolean(false)).toBe(true)
 })
-test("is function", () => {
+test('is function', () => {
   expect(is.function([])).toBe(false)
   expect(is.function(new Vector)).toBe(false)
 
@@ -166,7 +166,7 @@ test("is function", () => {
   expect(is.function(null)).toBe(false)
   expect(is.function(false)).toBe(false)
 })
-test("is Function", () => {
+test('is Function', () => {
   expect(is.Function([])).toBe(false)
   expect(is.Function(new Vector)).toBe(false)
 

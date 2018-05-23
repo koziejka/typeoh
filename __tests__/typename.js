@@ -4,30 +4,30 @@ class Car { }
 class Vector extends Array {
   constructor() { super(3) }
 }
-test("null", () => {
+test('null', () => {
   expect(typeName(null)).toBe('null')
 })
-test("undefined", () => {
+test('undefined', () => {
   expect(typeName(undefined)).toBe('undefined')
 })
-test("Object", () => {
+test('Object', () => {
   expect(typeName({})).toBe('Object')
 })
-test("Car", () => {
+test('Car', () => {
   expect(typeName(new Car)).toBe('Car')
 })
-test("Vector", () => {
+test('Vector', () => {
   expect(typeName(new Vector)).toBe('Vector')
 })
-test("Array", () => {
+test('Array', () => {
   expect(typeName([])).toBe('Array')
 })
-test("Function", () => {
+test('Function', () => {
   expect(typeName(function(){})).toBe('Function')
 })
-test("AsyncFunction", () => {
+test('AsyncFunction', () => {
   expect(typeName(async function(){})).toBe('AsyncFunction')
 })
-test("GeneratorFunction", () => {
+test('GeneratorFunction', () => {
   expect(typeName(function*(){})).toBe('GeneratorFunction')
 })
