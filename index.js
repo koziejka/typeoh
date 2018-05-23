@@ -53,7 +53,7 @@ const typeoh = (val) => {
       return val.constructor[typeohSymbol]
   }
 
-  if (isArray(val)) return T_Array
+  if (isArray(val) && val.constructor === Array) return T_Array
   if (val instanceof Date) return T_Date
   if (val instanceof RegExp) return T_RegExp
 
@@ -114,7 +114,7 @@ const name = val => {
       return 'Function'
   }
 
-  if (isArray(val)) return 'Array'
+  if (isArray(val) && val.constructor === Array) return 'Array'
   if (val instanceof Date) return 'Date'
   if (val instanceof RegExp) return 'RegExp'
 
@@ -191,21 +191,24 @@ const createType = (name, constructor, ...types) => {
   return createInstance
 }
 
+is.undefined = (val) => val === void 0
+is.null = (val) => val === null
 is.string = (val) => typeof val === 'string'
 is.number = (val) => typeof val === 'number'
 is.boolean = (val) => typeof val === 'boolean'
 is.function = (val) => typeof val === 'function'
-is.Function = (val) => val && val.constructor === Function
-is.AsyncFunction = (val) => val && val.constructor === AsyncConstructor
-is.GeneratorFunction = (val) => val && val.constructor === GeneratorConstructor
-is.AsyncGeneratorFunction = (val) => val && val.constructor === AsyncGeneratorConstructor
+is.Function = (val) => Boolean(val) && val.constructor === Function
+is.AsyncFunction = (val) => Boolean(val) && val.constructor === AsyncConstructor
+is.GeneratorFunction = (val) => Boolean(val) && val.constructor === GeneratorConstructor
+is.AsyncGeneratorFunction = (val) => Boolean(val) && val.constructor === AsyncGeneratorConstructor
 is.Array = Array.isArray
-is.object = (val) => typeof val === 'object'
+is.object = (val) => typeof val === 'object' && val !== null
 is.Object = (val) => typeoh(val) === T_Object
 is.Set = (val) => val instanceof Set
 is.WeakSet = (val) => val instanceof WeakSet
 is.Map = (val) => val instanceof Map
 is.WeakMap = (val) => val instanceof WeakMap
+is.Promise = (val) => val instanceof Promise
 
 module.exports = Object.assign(typeoh, { is, type, typeName: name, createType })
 
