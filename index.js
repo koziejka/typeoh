@@ -100,6 +100,7 @@ is.Function = (val) => Boolean(val) && val.constructor === Function
 is.AsyncFunction = (val) => Boolean(val) && val.constructor === AsyncConstructor
 is.GeneratorFunction = (val) => Boolean(val) && val.constructor === GeneratorConstructor
 is.AsyncGeneratorFunction = (val) => Boolean(val) && val.constructor === AsyncGeneratorConstructor
+// todo improve native function check 
 is.NativeFunction = val => Boolean(val) && `${val}`.length - 29 === val.name.length
 
 is.Array = Array.isArray
@@ -171,10 +172,7 @@ const createType = (name, constructor, ...extensions) => {
   const proto = T.prototype
 
   for (const ext of extensions) {
-    if (is.NativeFunction) {
-      // todo
-    }
-    else if (is.function(ext)) {
+    if (is.function(ext)) {
       addProtoFunction(proto, ext.name, ext)
       addTypeFunction(createInstance, ext.name, ext)
     }
