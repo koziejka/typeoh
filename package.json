@@ -1,0 +1,22 @@
+{
+  "author": {
+    "name": "Maciej Kozieja",
+    "email": "koziejka.com@gmail.com"
+  },
+  "description": "Smart and small type lib.",
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [{
+      "name": "koziejka",
+      "email": "koziejka.com@gmail.com"
+  }],
+  "name": "typeoh",
+  "version": "2.1.3",
+  "keywords": [
+    ""
+  ],
+  "repository": {
+    "type": "",
+    "url": ""
+  }
+}
