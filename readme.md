@@ -25,6 +25,10 @@ is.function(async () => {})           //? true
 is.Function(async () => {})           //? false
 is.AsyncFunction(async () => {})      //? true
 is.GeneratorFunction(function* () {}) //? true
+is.NativeFunction(Object.create)      //? true
+is.NativeFunction(() => {})           //? false
+
+is.Promise(Promise.resolve(1))        //? true
 
 ```
 

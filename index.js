@@ -1,5 +1,6 @@
 const typeohSymbol = Symbol.for('typeoh')
 
+//#region Type Symbols
 const T_undefined = Symbol.for('undefined')
 const T_null = Symbol.for('null')
 const T_boolean = Symbol.for('boolean')
@@ -15,6 +16,7 @@ const T_AsyncFunction = Symbol.for('AsyncFunction')
 const T_GeneratorFunction = Symbol.for('GeneratorFunction')
 const T_AsyncGenerator = Symbol.for('AsyncGeneratorFunction')
 const T_Type = Symbol.for('Type')
+//#endregion
 
 const isArray = Array.isArray
 
@@ -43,7 +45,7 @@ const typeoh = (val) => {
   if (val === null) return T_null
 
   switch (typeof val) {
-    case 'boolean': return T_boolean 
+    case 'boolean': return T_boolean
     case 'string': return T_string
     case 'number': return T_number
     case 'symbol': return T_Symbol
@@ -86,6 +88,28 @@ const is = (val1) => {
   throw new Error('Expected type name, symbol or constructor function')
 }
 
+is.undefined = (val) => val === void 0
+is.null = (val) => val === null
+is.string = (val) => typeof val === 'string'
+is.number = (val) => typeof val === 'number'
+is.boolean = (val) => typeof val === 'boolean'
+is.function = (val) => typeof val === 'function'
+is.object = (val) => typeof val === 'object' && val !== null
+
+is.Function = (val) => Boolean(val) && val.constructor === Function
+is.AsyncFunction = (val) => Boolean(val) && val.constructor === AsyncConstructor
+is.GeneratorFunction = (val) => Boolean(val) && val.constructor === GeneratorConstructor
+is.AsyncGeneratorFunction = (val) => Boolean(val) && val.constructor === AsyncGeneratorConstructor
+is.NativeFunction = val => Boolean(val) && `${val}`.length - 29 === val.name.length
+
+is.Array = Array.isArray
+is.Object = (val) => typeoh(val) === T_Object
+is.Set = (val) => val instanceof Set
+is.WeakSet = (val) => val instanceof WeakSet
+is.Map = (val) => val instanceof Map
+is.WeakMap = (val) => val instanceof WeakMap
+is.Promise = (val) => val instanceof Promise
+
 /** Creates Symbol for specified type name or constructor function.
  * @param {String|Function} type Type name or constructor function.
  * @returns {Symbol} 
@@ -123,66 +147,51 @@ const name = val => {
   return constructor.name
 }
 
-const isFunction = (val) => val && val.constructor === Function
-const isAsyncFunction = (val) => val && val.constructor === AsyncConstructor
-const isObject = (val) => typeof val === 'object'
+const addProtoFunction = (target, name, fn) =>
+  target[name] = Function('fn', `return function ${name}(...args) { return fn(this,...args)}`)(fn)
 
-// todo: add createType(class)
+const addTypeFunction = (target, name, fn) => {
+  fn = Function('fn', `return function ${name}(target, ...args) { return fn.call(target, target, ...args)}`)(fn)
+  if (['length', 'call', 'bind', 'apply'].indexOf(name) !== -1)
+    Object.defineProperty(target, name, { get() { return fn } })
+  else target[name] = fn
+}
+
 // todo: add { get prop() {}, set prop() {}}
-const createType = (name, constructor, ...types) => {
+const createType = (name, constructor, ...extensions) => {
   let createInstance
+  if (typeof name !== 'string') {
+    createInstance = createTypeFromClass(name)
+    extensions = [constructor, ...extensions]
+  }
+  else if (is.Function(constructor)) createInstance = createTypeFromFunction(name, constructor)
+  else if (is.AsyncFunction(constructor)) createInstance = createTypeFromAsyncFunction(name, constructor)
+
+  const T = createInstance[TypeBaseSymbol]
+  const proto = T.prototype
+
+  for (const ext of extensions) {
+    if (is.NativeFunction) {
+      // todo
+    }
+    else if (is.function(ext)) {
+      addProtoFunction(proto, ext.name, ext)
+      addTypeFunction(createInstance, ext.name, ext)
+    }
+    else if (is.Object(ext)) {
+      // todo
+    }
+  }
+
+  return createInstance
+}
+const createTypeFromAsyncFunction = (name, fn) => {
   const T = Function(`return function ${name}() {}`)()
 
-  const proto = T.prototype
-  const createPrototypeFunction = (name, fun) =>
-    Function('fun', `return function ${name} (...args) { return fun(this, ...args) }`)(fun)
-
-  const createPrototypeFunctionClass = (name, fun) =>
-    Function('fun', `return function ${name} (...args) { return fun.call(this, this, ...args) }`)(fun)
-
-  const isReserved = (name) => ['length', 'arguments', 'caller', 'name'].some(x => name === x)
-  if (isAsyncFunction(constructor)) {
-    createInstance = function createInstance(...args) {
-      const t = new T()
-      return constructor(t, ...args).then(() => t)
-    }
-  }
-  if (isFunction(constructor)) {
-    createInstance = function createInstance(...args) {
-      const t = new T()
-      constructor(t, ...args)
-      return t
-    }
-  }
-
-  for (const type of types) {
-    if (isConstructor(type) && Object.getOwnPropertyNames(type.prototype).length > 1) {
-      const protokeys = Object.getOwnPropertyNames(type.prototype)
-      protokeys.shift()
-      for (const name of protokeys) {
-        if (isReserved(name)) Object.defineProperty(createInstance, name, {
-          get() {
-            return (that, ...args) => type.prototype[name].call(that, ...args)
-          }
-        })
-        else createInstance[name] = type.prototype[name]
-        proto[name] = createPrototypeFunctionClass(name, type.prototype[name])
-      }
-    }
-    else if (isFunction(type)) {
-      if (!type.name) throw new Error('Expected function with name.')
-      if (isReserved(type.name)) Object.defineProperty(createInstance, type.name, { get() { return type } })
-      else createInstance[type.name] = type
-      proto[type.name] = createPrototypeFunction(type.name, type)
-    }
-    else if (isObject(type)) {
-      for (const name in type) {
-        if (isReserved(name)) Object.defineProperty(createInstance, name, { get() { return type[name] } })
-        else createInstance[name] = type[name]
-        proto[name] = createPrototypeFunction(name, type[name])//?
-      }
-    }
-
+  async function createInstance(...args) {
+    const t = new T
+    await fn(t, ...args)
+    return t
   }
 
   createInstance[isTypeSymbol] = true
@@ -190,24 +199,38 @@ const createType = (name, constructor, ...types) => {
   return createInstance
 }
 
-is.undefined = (val) => val === void 0
-is.null = (val) => val === null
-is.string = (val) => typeof val === 'string'
-is.number = (val) => typeof val === 'number'
-is.boolean = (val) => typeof val === 'boolean'
-is.function = (val) => typeof val === 'function'
-is.Function = (val) => Boolean(val) && val.constructor === Function
-is.AsyncFunction = (val) => Boolean(val) && val.constructor === AsyncConstructor
-is.GeneratorFunction = (val) => Boolean(val) && val.constructor === GeneratorConstructor
-is.AsyncGeneratorFunction = (val) => Boolean(val) && val.constructor === AsyncGeneratorConstructor
-is.Array = Array.isArray
-is.object = (val) => typeof val === 'object' && val !== null
-is.Object = (val) => typeoh(val) === T_Object
-is.Set = (val) => val instanceof Set
-is.WeakSet = (val) => val instanceof WeakSet
-is.Map = (val) => val instanceof Map
-is.WeakMap = (val) => val instanceof WeakMap
-is.Promise = (val) => val instanceof Promise
+const createTypeFromFunction = (name, fn) => {
+  const T = Function(`return function ${name}() {}`)()
+
+  function createInstance(...args) {
+    const t = new T
+    fn(t, ...args)
+    return t
+  }
+
+  createInstance[isTypeSymbol] = true
+  createInstance[TypeBaseSymbol] = T
+  return createInstance
+}
+
+const createTypeFromClass = (T) => {
+  const proto = T.prototype
+  const proto_keys = Object.getOwnPropertyNames(proto)
+
+  proto_keys.splice(proto_keys.indexOf('constructor'), 1)
+
+  function createInstance(...args) { return new T(...args) }
+
+  for (const key of proto_keys) {
+    const desc = Object.getOwnPropertyDescriptor(proto, key)
+    if (desc.get) createInstance[`get_${key}`] = Function(`return function ${key} (target, arg) { return target['${key}'] }`)()
+    if (desc.set) createInstance[`set_${key}`] = Function('fun', `return function ${key} (target, arg) { return target['${key}'] = arg }`)(proto[key])
+    if (desc.value) createInstance[key] = Function('fun', `return function ${key} (target, ...args) { return fun.call(target, ...args) }`)(proto[key])
+  }
+
+  createInstance[isTypeSymbol] = true
+  createInstance[TypeBaseSymbol] = T
+  return createInstance
+}
 
 module.exports = Object.assign(typeoh, { is, type, typeName: name, createType })
-
