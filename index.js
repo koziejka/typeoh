@@ -10,7 +10,6 @@ const T_Array = Symbol.for('Array')
 const T_Date = Symbol.for('Date')
 const T_RegExp = Symbol.for('RegExp')
 const T_Object = Symbol.for('Object')
-const T_Arguments = Symbol.for('arguments')
 const T_Function = Symbol.for('Function')
 const T_AsyncFunction = Symbol.for('AsyncFunction')
 const T_GeneratorFunction = Symbol.for('GeneratorFunction')
@@ -44,7 +43,7 @@ const typeoh = (val) => {
   if (val === null) return T_null
 
   switch (typeof val) {
-    case 'boolean': return T_boolean
+    case 'boolean': return T_boolean 
     case 'string': return T_string
     case 'number': return T_number
     case 'symbol': return T_Symbol
@@ -131,7 +130,7 @@ const isObject = (val) => typeof val === 'object'
 // todo: add createType(class)
 // todo: add { get prop() {}, set prop() {}}
 const createType = (name, constructor, ...types) => {
-
+  let createInstance
   const T = Function(`return function ${name}() {}`)()
 
   const proto = T.prototype
@@ -143,13 +142,13 @@ const createType = (name, constructor, ...types) => {
 
   const isReserved = (name) => ['length', 'arguments', 'caller', 'name'].some(x => name === x)
   if (isAsyncFunction(constructor)) {
-    function createInstance(...args) {
+    createInstance = function createInstance(...args) {
       const t = new T()
       return constructor(t, ...args).then(() => t)
     }
   }
   if (isFunction(constructor)) {
-    function createInstance(...args) {
+    createInstance = function createInstance(...args) {
       const t = new T()
       constructor(t, ...args)
       return t
